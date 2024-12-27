@@ -1,110 +1,272 @@
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-class Abiturient {
-    int id;
-    String lastName;
-    String firstName;
-    String middleName;
-    String address;
-    String phone;
-    List<Integer> marks;
+class Student {
+    private int id;
+    private String lastName;
+    private String firstName;
+    private String surName;
+    private String DOB;
+    private String address;
+    private String phone;
+    private String faculty;
+    private int course;
+    private String group;
 
-    public Abiturient(int id, String lastName, String firstName, String middleName, String address, String phone, List<Integer> marks) {
+    public Student(int id, String lastName, String firstName, String surName, String DOB, String address, String phone, String faculty, int course, String group) {
         this.id = id;
         this.lastName = lastName;
         this.firstName = firstName;
-        this.middleName = middleName;
+        this.surName = surName;
+        this.DOB = DOB;
         this.address = address;
         this.phone = phone;
-        this.marks = marks;
+        this.faculty = faculty;
+        this.course = course;
+        this.group = group;
     }
 
-    public int getSumOfMarks() {
-        int sum = 0;
-        for (int mark : marks) {
-            sum += mark;
-        }
-        return sum;
+    public int getId() {
+        return id;
     }
 
-    public boolean hasUnsatisfactoryMarks() {
-        for (int mark : marks) {
-            if (mark < 3) {
-                return true;
-            }
-        }
-        return false;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setMarks(List<Integer> marks) {
-        this.marks = marks;
+    public String getLastName() {
+        return lastName;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, lastName, firstName, middleName, address, phone, marks);
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getSurName() {
+        return surName;
+    }
+
+    public void setSurName(String surName) {
+        this.surName = surName;
+    }
+
+    public String getDOB() {
+        return DOB;
+    }
+
+    public void setDOB(String DOB) {
+        this.DOB = DOB;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(String faculty) {
+        this.faculty = faculty;
+    }
+
+    public int getCourse() {
+        return course;
+    }
+
+    public void setCourse(int course) {
+        this.course = course;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     @Override
     public String toString() {
-        return "Abiturient{" +
-                "id=" + id +
-                ", lastName='" + lastName + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", middleName='" + middleName + '\'' +
-                ", address='" + address + '\'' +
-                ", phone='" + phone + '\'' +
-                ", marks=" + marks +
-                '}';
+        return "Student: " +
+                "id = " + id +
+                ", lastName = " + lastName +
+                ", firstName = " + firstName +
+                ", surName = " + surName +
+                ", DOB = " + DOB +
+                ", address= " + address +
+                ", phone= " + phone +
+                ", faculty= " + faculty +
+                ", course= " + course +
+                ", group= " + group;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, lastName, firstName, surName, DOB, address, phone, faculty, course, group);
+    }
+
+
+    // переопределяем, чтобы сравнивать поля объектов одного класса, а не сами объекты(их ссылки)
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false; // проверяем принадлежность к одному классу
+        Student student = (Student) o;
+        return id == student.id &&
+               course == student.course &&
+               Objects.equals(lastName, student.lastName) &&
+               Objects.equals(firstName, student.firstName) &&
+               Objects.equals(surName, student.surName) &&
+               Objects.equals(DOB, student.DOB) &&
+               Objects.equals(address, student.address) &&
+               Objects.equals(phone, student.phone) &&
+               Objects.equals(faculty, student.faculty) &&
+               Objects.equals(group, student.group);
     }
 }
 
-public class Main {
+class StudentFilters {
+    private final List<Student> students;
 
+    public StudentFilters() {
+        this.students = new ArrayList<>(); // динамический массив
+    }
+
+    public void addStudent(Student student) {
+        students.add(student);
+    }
+
+    public List<Student> getStudentsByFaculty(String faculty) {
+        List<Student> result = new ArrayList<>();
+        for (Student student : students) {
+            if (student.getFaculty().equalsIgnoreCase(faculty)) { // сравниваем строки без учёта регистра
+                result.add(student);
+            }
+        }
+        return result;
+    }
+
+    public List<List<Student>> getStudentsByFacultyAndCourse() {
+        // находим количество факультетов и курсов
+        List<String> faculties = new ArrayList<>();
+        List<Integer> courses = new ArrayList<>();
+
+        for (Student student : students) {
+            if (!faculties.contains(student.getFaculty())) {
+                faculties.add(student.getFaculty());
+            }
+            if (!courses.contains(student.getCourse())) {
+                courses.add(student.getCourse()); 
+            }
+        }
+
+        int fuculties_count = faculties.size();
+        int courses_count = courses.size();
+
+        List<List<Student>> result = new ArrayList<>();
+        for (int i = 1; i <= fuculties_count; i++) { 
+            for (int j = 1; j <= courses_count; j++) {
+                List<Student> facultyCourseList = new ArrayList<>();
+                // находим студентов, которые относятся к текущему курсу(итерации цикла) и факультету(итерации цикла)
+                for (Student student : students) {
+                    if (student.getFaculty().equals("Faculty" + i) && student.getCourse() == j) {
+                        facultyCourseList.add(student);
+                    }
+                }
+                result.add(facultyCourseList);
+            }
+        }
+        return result;
+    }
+
+    public List<Student> getStudentsByYearOfBirth(int year) {
+        List<Student> result = new ArrayList<>();
+        for (Student student : students) {
+            int studentYear = Integer.parseInt(student.getDOB().split("\\.")[2]); // берём год по разделителю и возвращаем целое число
+            if (studentYear > year) {
+                result.add(student);
+            }
+        }
+        return result;
+    }
+
+    public List<Student> getStudentsByGroup(String group) {
+        List<Student> result = new ArrayList<>();
+        for (Student student : students) {
+            if (student.getGroup().equalsIgnoreCase(group)) {
+                result.add(student);
+            }
+        }
+        return result;
+    }
+
+    public void printStudents(List<Student> students) {
+        for (Student student : students) {
+            System.out.println(student);
+        }
+    }
+
+    public void printStudentsLists(List<List<Student>> studentsLists) {
+        for (List<Student> list : studentsLists) {
+            for (Student student : list) {
+                System.out.println(student);
+            }
+        }
+    }
+}
+
+public class main {
     public static void main(String[] args) {
-        List<Abiturient> abiturients = new ArrayList<>();
-        abiturients.add(new Abiturient(1, "Ivanov", "Ivan", "Ivanovich", "ul. Lenina, 1", "89123456789", List.of(4, 5, 3, 4, 5)));
-        abiturients.add(new Abiturient(2, "Petrov", "Petr", "Petrovich", "ul. Pushkina, 2", "89123456780", List.of(5, 4, 3, 2, 5)));
-        abiturients.add(new Abiturient(3, "Sidorov", "Sidor", "Sidorovich", "ul. Tolstogo, 3", "89123456781", List.of(3, 4, 4, 5, 4)));
-        abiturients.add(new Abiturient(4, "Kozlov", "Kozla", "Kozlovich", "ul. Gorkogo, 4", "89123456782", List.of(2, 3, 4, 3, 4)));
-        abiturients.add(new Abiturient(5, "Mikhailov", "Mikhail", "Mikhailovich", "ul. Chehova, 5", "89123456783", List.of(4, 5, 5, 5, 5)));
+        StudentFilters StudentFilters = new StudentFilters();
 
-        // a) Список абитуриентов с неудовлетворительными оценками
-        System.out.println("Список абитуриентов с неудовлетворительными оценками:");
-        for (Abiturient abiturient : abiturients) {
-            if (abiturient.hasUnsatisfactoryMarks()) {
-                System.out.println(abiturient);
-            }
-        }
+        // Добавление студентов
+        StudentFilters.addStudent(new Student(1, "Smith", "John", "A.", "01.01.1995", "Address1", "123456789", "Faculty1", 1, "GroupA"));
+        StudentFilters.addStudent(new Student(2, "Doe", "Jane", "B.", "02.02.1996", "Address2", "987654321", "Faculty2", 2, "GroupB"));
+        StudentFilters.addStudent(new Student(3, "Johnson", "Mike", "C.", "03.03.1997", "Address3", "111222333", "Faculty1", 2, "GroupA"));
+        StudentFilters.addStudent(new Student(4, "Williams", "Anna", "D.", "04.04.1998", "Address4", "444555666", "Faculty3", 2, "GroupA"));
+        StudentFilters.addStudent(new Student(5, "Brown", "David", "E.", "05.05.1999", "Address5", "777888999", "Faculty3", 3, "GroupB"));
+        StudentFilters.addStudent(new Student(6, "Brown", "David", "E.", "05.05.1999", "Address5", "777888999", "Faculty1", 1, "GroupB"));
 
-        // b) Список абитуриентов с суммой баллов выше указанной
-        int specifiedSum = 18;
-        System.out.println("\nСписок абитуриентов с суммой баллов выше указанной" + specifiedSum + ":");
-        for (Abiturient abiturient : abiturients) {
-            if (abiturient.getSumOfMarks() > specifiedSum) {
-                System.out.println(abiturient);
-            }
-        }
+        // 1) Список студентов заданного факультета
+        List<Student> faculty1Students = StudentFilters.getStudentsByFaculty("Faculty1");
+        System.out.println("Студенты факультета Faculty1:");
+        StudentFilters.printStudents(faculty1Students);
 
-        // c) Выбор определенного количества абитуриентов с наибольшей суммой баллов
-        int n = 2;
-        System.out.println("\n" + n + " абитуриенты с самой высокой суммой баллов:");
-        Collections.sort(abiturients, Comparator.comparingInt(Abiturient::getSumOfMarks).reversed());
-        for (int i = 0; i < n; i++) {
-            System.out.println(abiturients.get(i));
-        }
+        // 2) Списки студентов для каждого факультета и курса
+        List<List<Student>> facultyCourseStudents = StudentFilters.getStudentsByFacultyAndCourse();
+        System.out.println("\nСтуденты по факультетам и курсам:");
+        StudentFilters.printStudentsLists(facultyCourseStudents);
 
-        // Вывод списка абитуриентов с проходным баллом
-        int passingScore = abiturients.get(n - 1).getSumOfMarks();
-        System.out.println("\nСписок абитуриентов с проходным баллом " + passingScore + ":");
-        for (Abiturient abiturient : abiturients) {
-            if (abiturient.getSumOfMarks() >= passingScore) {
-                System.out.println(abiturient);
-            }
-        }
+        // 3) Список студентов, родившихся после заданного года
+        List<Student> studentsAfter1997 = StudentFilters.getStudentsByYearOfBirth(1997);
+        System.out.println("\nСтуденты, родившиеся после 1997 года:");
+        StudentFilters.printStudents(studentsAfter1997);
+
+        // 4) Список учебной группы
+        List<Student> groupAStudents = StudentFilters.getStudentsByGroup("GroupA");
+        System.out.println("\nСтуденты группы GroupA:");
+        StudentFilters.printStudents(groupAStudents);
     }
 }
